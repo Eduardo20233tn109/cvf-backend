@@ -50,4 +50,3 @@ export const markAllAsRead = (userId) => {
 export const countUnread = (userId) => {
   return Notification.countDocuments({ usuarioId: userId, leida: false });
 };
-

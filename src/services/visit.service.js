@@ -9,6 +9,22 @@ export const getVisits = (estado) => {
   return repository.findAll({ estado });
 };
 
+/**
+ * Obtiene las visitas de un residente específico
+ * @param {string} residenteId - ID del residente
+ * @param {string} estado - Estado opcional para filtrar
+ */
+export const getVisitsByResidente = (residenteId, estado) => {
+  const filter = { residenteId };
+  
+  // Si se envía un estado específico, agregarlo al filtro
+  if (estado && estado !== 'Todos' && estado !== '' && estado !== 'undefined') {
+    filter.estado = estado;
+  }
+  
+  return repository.findAll(filter);
+};
+
 export const createVisit = data => repository.create(data);
 export const updateVisit = (id, data) => repository.update(id, data);
 export const toggleEstado = id => repository.toggleEstado(id);
@@ -28,8 +44,15 @@ export const cancelVisit = async (visitId, residenteId) => {
     }
     
     // Verificar que la visita pertenezca al residente (solo si se proporciona residenteId)
-    if (residenteId && visita.residenteId.toString() !== residenteId.toString()) {
-      throw new Error('No tienes permiso para cancelar esta visita');
+    if (residenteId) {
+      // Manejar tanto si residenteId está poblado (objeto) como si es solo el ID
+      const visitaResidenteId = visita.residenteId._id 
+        ? visita.residenteId._id.toString() 
+        : visita.residenteId.toString();
+      
+      if (visitaResidenteId !== residenteId.toString()) {
+        throw new Error('No tienes permiso para cancelar esta visita');
+      }
     }
     
     // Solo se puede cancelar si está Pendiente o Aprobada

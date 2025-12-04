@@ -5,8 +5,9 @@ import upload from '../middlewares/upload.js';
 import { verificarToken } from '../middlewares/auth.js';
 import { checkRole } from '../middlewares/checkRole.js';
 
-// Rutas para ADMIN y GUARDIA (ver y validar visitas)
-router.get('/', verificarToken, checkRole('ADMIN', 'GUARDIA'), ctrl.getAll);
+// Rutas para ADMIN, GUARDIA y RESIDENTE (ver visitas)
+// ADMIN y GUARDIA ven todas, RESIDENTE solo las suyas
+router.get('/', verificarToken, ctrl.getAll);
 router.put('/status/:id', verificarToken, checkRole('ADMIN', 'GUARDIA'), ctrl.toggleEstado);
 router.put(
   '/status-with-evidence/:id',

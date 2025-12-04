@@ -2,7 +2,18 @@ import * as service from '../services/visit.service.js';
 
 export const getAll = async (req, res) => {
   try {
-    const data = await service.getVisits(req.query.estado);
+    const { estado } = req.query;
+    const userRole = req.user?.tipoUsuario;
+    const userId = req.userid;
+
+    // Si es RESIDENTE, solo puede ver sus propias visitas
+    if (userRole === 'RESIDENTE') {
+      const data = await service.getVisitsByResidente(userId, estado);
+      return res.json(data);
+    }
+
+    // ADMIN y GUARDIA ven todas las visitas
+    const data = await service.getVisits(estado);
     res.json(data);
   } catch (e) {
     console.error('❌ Error en getAll:', e.message || e);
@@ -82,15 +93,15 @@ export const getById = async (req, res) => {
 
 /**
  * Cancela una visita
- * Por ahora sin verificación de autenticación
+ * Solo RESIDENTE puede cancelar sus propias visitas
  */
 export const cancelVisit = async (req, res) => {
   try {
     const { id } = req.params;
-    const residenteId = req.body.residenteId; // Obtener del body (sin autenticación por ahora)
+    const residenteId = req.userid; // Usar el ID del usuario autenticado (del token)
     
-    // Si no viene residenteId en el body, intentar obtenerlo de la visita
-    let visita = await service.getVisitById(id);
+    // Obtener la visita
+    const visita = await service.getVisitById(id);
     
     if (!visita) {
       return res.status(404).json({ 
@@ -99,20 +110,30 @@ export const cancelVisit = async (req, res) => {
       });
     }
     
-    // Si viene residenteId en el body, verificar que sea el dueño
-    if (residenteId && visita.residenteId.toString() !== residenteId.toString()) {
+    // Verificar que la visita pertenezca al residente autenticado
+    // Manejar tanto si residenteId está poblado (objeto) como si es solo el ID
+    const visitaResidenteId = visita.residenteId._id 
+      ? visita.residenteId._id.toString() 
+      : visita.residenteId.toString();
+    
+    if (visitaResidenteId !== residenteId.toString()) {
+      console.log('🔍 Comparación de IDs:', {
+        visitaResidenteId,
+        residenteIdAutenticado: residenteId.toString(),
+        sonIguales: visitaResidenteId === residenteId.toString()
+      });
       return res.status(403).json({ 
         success: false, 
         message: 'No tienes permiso para cancelar esta visita' 
       });
     }
     
-    // Cancelar la visita (sin verificar dueño si no viene residenteId)
-    visita = await service.cancelVisit(id, residenteId || visita.residenteId.toString());
+    // Cancelar la visita
+    const visitaCancelada = await service.cancelVisit(id, residenteId);
     
     res.json({ 
       success: true, 
-      data: visita,
+      data: visitaCancelada,
       message: 'Visita cancelada exitosamente'
     });
   } catch (e) {

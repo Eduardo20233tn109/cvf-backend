@@ -1,20 +1,25 @@
 // Archivo: app.js
 
+// ⚠️ IMPORTANTE: dotenv debe ser lo primero
+import dotenv from 'dotenv';
+dotenv.config();
+
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
 import { connectDB } from "./src/database.js";
+import { config } from "./src/config.js";
 
 import houseRoutes from "./src/routes/house.routes.js";
 import userRoutes from "./src/routes/user.routes.js";
 import rolRoutes from "./src/routes/rol.routes.js";
 import visitRoutes from "./src/routes/visit.routes.js";
 
-// Conexión a la base de datos
-connectDB();
-
 const app = express();
-const PORT = 4000;
+const PORT = config.port;
+
+// Conexión a la base de datos (después de cargar dotenv)
+connectDB();
 
 // ✅ CORS correctamente configurado
 const allowedOrigins = [

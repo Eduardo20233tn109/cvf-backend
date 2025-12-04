@@ -1,7 +1,7 @@
-const Rol = require('../models/rol.model');
+import * as repository from '../repositories/rol.repository.js';
 
-exports.findAll = () => Rol.find();
-exports.findById = id => Rol.findById(id);
-exports.create = data => new Rol(data).save();
-exports.update = (id, data) => Rol.findByIdAndUpdate(id, data, { new: true });
-exports.delete = id => Rol.findByIdAndDelete(id);
+export const getRoles = () => repository.findAll();
+export const getRolById = (id) => repository.findById(id);
+export const createRol = (data) => repository.create(data);
+export const updateRol = (id, data) => repository.update(id, data);
+export const deleteRol = (id) => repository.deleteRol(id);

@@ -1,6 +1,6 @@
-const service = require('../services/visit.service');
+import * as service from '../services/visit.service.js';
 
-exports.getAll = async (req, res) => {
+export const getAll = async (req, res) => {
   try {
     const data = await service.getVisits(req.query.estado);
     res.json(data);
@@ -10,7 +10,7 @@ exports.getAll = async (req, res) => {
   }
 };
 
-exports.create = async (req, res) => {
+export const create = async (req, res) => {
   try {
     console.log('📥 Payload recibido:', req.body);
     const visit = await service.createVisit(req.body);
@@ -21,7 +21,7 @@ exports.create = async (req, res) => {
   }
 };
 
-exports.update = async (req, res) => {
+export const update = async (req, res) => {
   try {
     const updated = await service.updateVisit(req.params.id, req.body);
     res.json(updated);
@@ -31,7 +31,7 @@ exports.update = async (req, res) => {
   }
 };
 
-exports.toggleEstado = async (req, res) => {
+export const toggleEstado = async (req, res) => {
   try {
     const { observaciones, evidencias } = req.body;
     const visita = await service.getVisitById(req.params.id);
@@ -67,7 +67,7 @@ exports.toggleEstado = async (req, res) => {
   }
 };
 
-exports.getById = async (req, res) => {
+export const getById = async (req, res) => {
   try {
     const visita = await service.getVisitById(req.params.id);
     if (!visita) {
@@ -84,7 +84,7 @@ exports.getById = async (req, res) => {
  * Cancela una visita
  * Por ahora sin verificación de autenticación
  */
-exports.cancelVisit = async (req, res) => {
+export const cancelVisit = async (req, res) => {
   try {
     const { id } = req.params;
     const residenteId = req.body.residenteId; // Obtener del body (sin autenticación por ahora)
@@ -125,7 +125,7 @@ exports.cancelVisit = async (req, res) => {
 };
 
 // ✅ CORREGIDO: Esta era la línea que tenías con export
-exports.toggleEstadoConFotos = async (req, res) => {
+export const toggleEstadoConFotos = async (req, res) => {
   try {
     const visita = await service.getVisitById(req.params.id);
     if (!visita) return res.status(404).json({ success: false, message: 'Visita no encontrada' });
@@ -151,4 +151,14 @@ exports.toggleEstadoConFotos = async (req, res) => {
     console.error('❌ Error al actualizar con fotos:', e.message);
     res.status(400).json({ success: false, message: e.message });
   }
+};
+
+export default {
+  getAll,
+  create,
+  update,
+  toggleEstado,
+  getById,
+  cancelVisit,
+  toggleEstadoConFotos
 };

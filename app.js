@@ -24,12 +24,30 @@ connectDB();
 
 // ✅ CORS correctamente configurado
 const allowedOrigins = [
-  'http://localhost:5173', // ← este es el puerto de Vite
-  'https://staging.d1ep2v2o8kjxai.amplifyapp.com' // elimina la barra al final
+  'http://localhost:5173', // Desarrollo local Vite
+  'http://localhost:4173', // Preview build local
+  'https://cvf-web.vercel.app', // Producción Vercel
+  'https://staging.d1ep2v2o8kjxai.amplifyapp.com'
 ];
 
 app.use(cors({
-  origin: allowedOrigins,
+  origin: function (origin, callback) {
+    // Permitir requests sin origin (como mobile apps o curl)
+    if (!origin) return callback(null, true);
+    
+    // Permitir todos los subdominios de Vercel (preview deployments)
+    if (origin.endsWith('.vercel.app')) {
+      return callback(null, true);
+    }
+    
+    // Verificar si está en la lista de orígenes permitidos
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      return callback(null, true);
+    }
+    
+    // Rechazar otros orígenes
+    callback(new Error('Not allowed by CORS'));
+  },
   credentials: true,
 }));
 

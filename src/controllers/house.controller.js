@@ -7,14 +7,7 @@ const houseCtrl = {};
 houseCtrl.getHouses = async (req, res) => {
   try {
     const houses = await houseService.getAllHouses();
-
-    // Añadir URL completa a la imagen
-    const housesWithPhotoUrl = houses.map(house => ({
-      ...house._doc,
-      photoUrl: house.photo ? `http://localhost:4000/uploads/${house.photo}` : null
-    }));
-
-    messageGeneral(res, 200, true, housesWithPhotoUrl, "Lista de casas");
+    messageGeneral(res, 200, true, houses, "Lista de casas");
   } catch (error) {
     messageGeneral(res, 500, false, "", error.message);
   }

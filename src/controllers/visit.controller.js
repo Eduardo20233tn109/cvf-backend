@@ -80,6 +80,50 @@ exports.getById = async (req, res) => {
   }
 };
 
+/**
+ * Cancela una visita
+ * Por ahora sin verificación de autenticación
+ */
+exports.cancelVisit = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const residenteId = req.body.residenteId; // Obtener del body (sin autenticación por ahora)
+    
+    // Si no viene residenteId en el body, intentar obtenerlo de la visita
+    let visita = await service.getVisitById(id);
+    
+    if (!visita) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Visita no encontrada' 
+      });
+    }
+    
+    // Si viene residenteId en el body, verificar que sea el dueño
+    if (residenteId && visita.residenteId.toString() !== residenteId.toString()) {
+      return res.status(403).json({ 
+        success: false, 
+        message: 'No tienes permiso para cancelar esta visita' 
+      });
+    }
+    
+    // Cancelar la visita (sin verificar dueño si no viene residenteId)
+    visita = await service.cancelVisit(id, residenteId || visita.residenteId.toString());
+    
+    res.json({ 
+      success: true, 
+      data: visita,
+      message: 'Visita cancelada exitosamente'
+    });
+  } catch (e) {
+    console.error('❌ Error al cancelar visita:', e.message || e);
+    res.status(400).json({ 
+      success: false, 
+      message: e.message || e 
+    });
+  }
+};
+
 // ✅ CORREGIDO: Esta era la línea que tenías con export
 exports.toggleEstadoConFotos = async (req, res) => {
   try {

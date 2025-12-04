@@ -1,10 +1,10 @@
-const service = require('../services/notification.service');
+import * as service from '../services/notification.service.js';
 
 /**
  * Obtiene todas las notificaciones de un usuario
  * GET /api/notifications?userId={userId}
  */
-exports.getNotifications = async (req, res) => {
+export const getNotifications = async (req, res) => {
   try {
     const { userId } = req.query;
 
@@ -37,7 +37,7 @@ exports.getNotifications = async (req, res) => {
  * Crea una nueva notificación
  * POST /api/notifications
  */
-exports.createNotification = async (req, res) => {
+export const createNotification = async (req, res) => {
   try {
     const { usuarioId, visitaId, titulo, mensaje, tipo } = req.body;
 
@@ -96,7 +96,7 @@ exports.createNotification = async (req, res) => {
  * PUT /api/notifications/{id}/read
  * Opcionalmente puede recibir userId en query para validación de seguridad
  */
-exports.markAsRead = async (req, res) => {
+export const markAsRead = async (req, res) => {
   try {
     const { id } = req.params;
     const { userId } = req.query; // Opcional: para validación de seguridad
@@ -130,7 +130,7 @@ exports.markAsRead = async (req, res) => {
  * Marca todas las notificaciones de un usuario como leídas
  * PUT /api/notifications/read-all?userId={userId}
  */
-exports.markAllAsRead = async (req, res) => {
+export const markAllAsRead = async (req, res) => {
   try {
     const { userId } = req.query;
 
@@ -161,7 +161,7 @@ exports.markAllAsRead = async (req, res) => {
  * Obtiene el conteo de notificaciones no leídas
  * GET /api/notifications/unread-count?userId={userId}
  */
-exports.getUnreadCount = async (req, res) => {
+export const getUnreadCount = async (req, res) => {
   try {
     const { userId } = req.query;
 
@@ -186,5 +186,13 @@ exports.getUnreadCount = async (req, res) => {
       error: error.message
     });
   }
+};
+
+export default {
+  getNotifications,
+  createNotification,
+  markAsRead,
+  markAllAsRead,
+  getUnreadCount
 };
 

@@ -1,5 +1,6 @@
-const router = require('express').Router();
-const controller = require('../controllers/notification.controller');
+import { Router } from 'express';
+const router = Router();
+import controller from '../controllers/notification.controller.js';
 
 // Obtener notificaciones de un usuario
 router.get('/', controller.getNotifications);
@@ -16,5 +17,5 @@ router.post('/', controller.createNotification);
 // Marcar notificación como leída (debe ir al final porque usa /:id)
 router.put('/:id/read', controller.markAsRead);
 
-module.exports = router;
+export default router;
 

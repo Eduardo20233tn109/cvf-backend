@@ -1,11 +1,11 @@
-const repository = require('../repositories/notification.repository');
-const User = require('../models/user.model');
-const Visit = require('../models/visit.model');
+import * as repository from '../repositories/notification.repository.js';
+import User from '../models/user.model.js';
+import Visit from '../models/visit.model.js';
 
 /**
  * Obtiene todas las notificaciones de un usuario
  */
-exports.getNotificationsByUserId = async (userId) => {
+export const getNotificationsByUserId = async (userId) => {
   // Validar que el usuario existe
   const user = await User.findById(userId);
   if (!user) {
@@ -23,7 +23,7 @@ exports.getNotificationsByUserId = async (userId) => {
 /**
  * Crea una nueva notificación
  */
-exports.createNotification = async (data) => {
+export const createNotification = async (data) => {
   const { usuarioId, visitaId, titulo, mensaje, tipo = 'validacion_visita' } = data;
 
   // Validaciones
@@ -84,7 +84,7 @@ exports.createNotification = async (data) => {
  * @param {string} notificationId - ID de la notificación
  * @param {string} userId - ID del usuario (opcional, para validación de seguridad)
  */
-exports.markAsRead = async (notificationId, userId = null) => {
+export const markAsRead = async (notificationId, userId = null) => {
   const notification = await repository.findById(notificationId);
   
   if (!notification) {
@@ -102,7 +102,7 @@ exports.markAsRead = async (notificationId, userId = null) => {
 /**
  * Marca todas las notificaciones de un usuario como leídas
  */
-exports.markAllAsRead = async (userId) => {
+export const markAllAsRead = async (userId) => {
   // Validar que el usuario existe
   const user = await User.findById(userId);
   if (!user) {
@@ -119,7 +119,7 @@ exports.markAllAsRead = async (userId) => {
 /**
  * Obtiene el conteo de notificaciones no leídas de un usuario
  */
-exports.getUnreadCount = async (userId) => {
+export const getUnreadCount = async (userId) => {
   const user = await User.findById(userId);
   if (!user) {
     throw new Error('Usuario no encontrado');

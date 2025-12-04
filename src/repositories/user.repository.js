@@ -1,16 +1,16 @@
-const User = require('../models/user.model.js');
+import User from '../models/user.model.js';
 
-exports.findAll = (filter = {}) => User.find(filter).populate('house_id');
-exports.findById = id => User.findById(id);
-exports.create = data => new User(data).save();
-exports.update = (id, data) => User.findByIdAndUpdate(id, data, { new: true });
-exports.toggleEstado = async id => {
+export const findAll = (filter = {}) => User.find(filter).populate('house_id');
+export const findById = id => User.findById(id);
+export const create = data => new User(data).save();
+export const update = (id, data) => User.findByIdAndUpdate(id, data, { new: true });
+export const toggleEstado = async id => {
   const user = await User.findById(id);
   user.enabled = !user.enabled;
   return user.save();
 };
 
-exports.getUserByUsername = async (username) => {
+export const getUserByUsername = async (username) => {
   return await User.findOne({ username });
 };
 

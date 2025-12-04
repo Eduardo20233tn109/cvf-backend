@@ -1,6 +1,6 @@
-const service = require('../services/rol.service');
+import * as service from '../services/rol.service.js';
 
-exports.getAll = async (req, res) => {
+export const getAll = async (req, res) => {
   try {
     const data = await service.getRoles();
     res.json(data);
@@ -9,7 +9,7 @@ exports.getAll = async (req, res) => {
   }
 };
 
-exports.create = async (req, res) => {
+export const create = async (req, res) => {
   try {
     const rol = await service.createRol(req.body);
     res.status(201).json(rol);
@@ -18,7 +18,7 @@ exports.create = async (req, res) => {
   }
 };
 
-exports.update = async (req, res) => {
+export const update = async (req, res) => {
   try {
     const updated = await service.updateRol(req.params.id, req.body);
     res.json(updated);
@@ -27,7 +27,7 @@ exports.update = async (req, res) => {
   }
 };
 
-exports.remove = async (req, res) => {
+export const remove = async (req, res) => {
   try {
     await service.deleteRol(req.params.id);
     res.json({ message: 'Rol eliminado' });
@@ -35,3 +35,5 @@ exports.remove = async (req, res) => {
     res.status(400).json({ error: e });
   }
 };
+
+export default { getAll, create, update, remove };

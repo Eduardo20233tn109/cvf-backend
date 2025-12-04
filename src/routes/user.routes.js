@@ -1,27 +1,23 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const controller = require('../controllers/user.controller.js');
-const auth = require('../middlewares/auth.js');
-const { verificarToken } = auth;
+import controller from '../controllers/user.controller.js';
+import { verificarToken } from '../middlewares/auth.js';
+import { checkRole } from '../middlewares/checkRole.js';
 
-// Rutas públicas
+// Rutas públicas (sin autenticación)
 router.post('/login', controller.login); // Web
 router.post('/login-mobile', controller.loginUser); // Móvil
-
-// Rutas de verificación
 router.get("/check-username", controller.checkUsername);
 router.get("/check-phone", controller.checkPhone);
 
-// CRUD básico
-router.get('/', controller.getAll);
-router.post('/save', controller.create);
-router.put('/update/:id', controller.update);
-router.put('/status/:id', controller.toggleEstado);
+// Rutas protegidas - Solo ADMIN
+router.get('/', verificarToken, checkRole('ADMIN'), controller.getAll);
+router.post('/save', verificarToken, checkRole('ADMIN'), controller.create);
+router.put('/update/:id', verificarToken, checkRole('ADMIN'), controller.update);
+router.put('/status/:id', verificarToken, checkRole('ADMIN'), controller.toggleEstado);
 
-// Actualización de perfil para residentes
-router.put('/update-profile', controller.updateProfile);
+// Rutas protegidas - Usuario autenticado (cualquier rol)
+router.put('/update-profile', verificarToken, controller.updateProfile);
+router.get("/:id", verificarToken, controller.getById);
 
-// Obtener perfil individual
-router.get("/:id", controller.getById);
-
-module.exports = router;
+export default router;

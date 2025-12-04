@@ -1,23 +1,23 @@
-const Visit = require('../models/visit.model');
+import Visit from '../models/visit.model.js';
 
-exports.findAll = (filter = {}) => {
+export const findAll = (filter = {}) => {
   return Visit.find(filter)
     .populate('residenteId', 'nombre apellido username phone');
 };
 
-exports.findById = (id) => {
+export const findById = (id) => {
   return Visit.findById(id)
     .populate('residenteId', 'nombre apellido username phone');
 };
 
-exports.create = (data) => new Visit(data).save();
+export const create = (data) => new Visit(data).save();
 
-exports.update = (id, data) => {
+export const update = (id, data) => {
   return Visit.findByIdAndUpdate(id, data, { new: true })
     .populate('residenteId', 'nombre apellido username phone');
 };
 
-exports.toggleEstado = async (id) => {
+export const toggleEstado = async (id) => {
   const doc = await Visit.findById(id);
   doc.enabled = !doc.enabled;
   return doc.save();

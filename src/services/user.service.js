@@ -1,9 +1,9 @@
-const bcrypt = require('bcryptjs');
-const User = require('../models/user.model.js');
-const userRepository = require('../repositories/user.repository.js');
-const mongoose = require('mongoose');
+import bcrypt from 'bcryptjs';
+import User from '../models/user.model.js';
+import * as userRepository from '../repositories/user.repository.js';
+import mongoose from 'mongoose';
 
-exports.getUsers = async (estado) => {
+export const getUsers = async (estado) => {
   const filtro = {};
   if (estado === 'Activo') filtro.enabled = true;
   if (estado === 'Inactivo') filtro.enabled = false;
@@ -16,7 +16,7 @@ exports.getUsers = async (estado) => {
   }
 };
 
-exports.createUser = async (data) => {
+export const createUser = async (data) => {
   data.username = data.username?.trim();
   data.tipoUsuario = data.tipoUsuario?.toUpperCase();
 
@@ -45,7 +45,7 @@ exports.createUser = async (data) => {
   return await nuevoUsuario.save();
 };
 
-exports.updateUser = async (id, data) => {
+export const updateUser = async (id, data) => {
   if (data.username) {
     data.username = data.username.trim();
   }
@@ -87,7 +87,7 @@ exports.updateUser = async (id, data) => {
   return await User.findByIdAndUpdate(id, data, { new: true }).populate('house_id');
 };
 
-exports.toggleEstado = async (id) => {
+export const toggleEstado = async (id) => {
   const user = await User.findById(id);
   if (!user) throw new Error('Usuario no encontrado');
 
@@ -95,7 +95,7 @@ exports.toggleEstado = async (id) => {
   return await user.save();
 };
 
-exports.login = async (username, password) => {
+export const login = async (username, password) => {
   if (!username || !password) {
     throw new Error("Usuario y contraseña son obligatorios");
   }
@@ -117,4 +117,4 @@ exports.login = async (username, password) => {
   };
 };
 
-exports.findByUsername = (username) => User.findOne({ username });
+export const findByUsername = (username) => User.findOne({ username });

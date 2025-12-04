@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const visitaSchema = new mongoose.Schema({
   fecha: { type: Date, required: true },
@@ -30,4 +30,4 @@ const visitaSchema = new mongoose.Schema({
   timestamps: true
 });
 
-module.exports = mongoose.model('Visita', visitaSchema);
+export default mongoose.model('Visita', visitaSchema);

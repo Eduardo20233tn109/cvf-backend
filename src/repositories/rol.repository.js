@@ -1,7 +1,7 @@
-const Rol = require('../models/rol.model');
+import Rol from '../models/rol.model.js';
 
-exports.findAll = () => Rol.find();
-exports.findById = id => Rol.findById(id);
-exports.create = data => new Rol(data).save();
-exports.update = (id, data) => Rol.findByIdAndUpdate(id, data, { new: true });
-exports.delete = id => Rol.findByIdAndDelete(id);
+export const findAll = () => Rol.find();
+export const findById = id => Rol.findById(id);
+export const create = data => new Rol(data).save();
+export const update = (id, data) => Rol.findByIdAndUpdate(id, data, { new: true });
+export const deleteRol = id => Rol.findByIdAndDelete(id);

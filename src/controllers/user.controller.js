@@ -1,11 +1,12 @@
-const userService = require('../services/user.service');
-const UserModel = require('../models/user.model.js');
-const userRepository = require('../repositories/user.repository.js');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
+import * as userService from '../services/user.service.js';
+import UserModel from '../models/user.model.js';
+import * as userRepository from '../repositories/user.repository.js';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
+import { config } from '../config.js';
 
 // ✅ Obtener todos los usuarios
-exports.getAll = async (req, res) => {
+export const getAll = async (req, res) => {
   try {
     const estado = req.query.estado || null;
     const users = await userService.getUsers(estado);
@@ -17,7 +18,7 @@ exports.getAll = async (req, res) => {
 };
 
 // ✅ Crear usuario
-exports.create = async (req, res) => {
+export const create = async (req, res) => {
   try {
     console.log("📥 Payload recibido:", req.body);
     const saved = await userService.createUser(req.body);
@@ -29,7 +30,7 @@ exports.create = async (req, res) => {
 };
 
 // ✅ Actualizar usuario (Admin)
-exports.update = async (req, res) => {
+export const update = async (req, res) => {
   try {
     const updated = await userService.updateUser(req.params.id, req.body);
     res.json(updated);
@@ -39,7 +40,7 @@ exports.update = async (req, res) => {
 };
 
 // ✅ Actualizar perfil (App residente y web)
-exports.updateProfile = async (req, res) => {
+export const updateProfile = async (req, res) => {
   try {
     const { userId, nombre, telefono, correo, apellido } = req.body;
     console.log('🔧 Recibido en updateProfile:', req.body);
@@ -62,7 +63,7 @@ exports.updateProfile = async (req, res) => {
 
 
 // ✅ Cambiar estado (activar/desactivar)
-exports.toggleEstado = async (req, res) => {
+export const toggleEstado = async (req, res) => {
   try {
     const updated = await userService.toggleEstado(req.params.id);
     res.json(updated);
@@ -72,7 +73,7 @@ exports.toggleEstado = async (req, res) => {
 };
 
 // ✅ Login para plataforma web
-exports.login = async (req, res) => {
+export const login = async (req, res) => {
   try {
     const { username, password } = req.body;
 
@@ -87,8 +88,8 @@ exports.login = async (req, res) => {
 
     const token = jwt.sign(
       { _id: user._id, tipoUsuario: user.tipoUsuario },
-      process.env.JWT_SECRET || "secreta",
-      { expiresIn: '1h' }
+      config.jwtSecret,
+      { expiresIn: config.jwtExpire }
     );
 
     console.log("✅ Usuario autenticado (web):", username);
@@ -113,7 +114,7 @@ exports.login = async (req, res) => {
 };
 
 // ✅ Login para app móvil (residente o guardia)
-exports.loginUser = async (req, res) => {
+export const loginUser = async (req, res) => {
   try {
     const { username, password } = req.body;
 
@@ -135,8 +136,8 @@ exports.loginUser = async (req, res) => {
 
     const token = jwt.sign(
       { id: user._id, tipoUsuario: user.tipoUsuario },
-      process.env.JWT_SECRET || 'secreto123',
-      { expiresIn: '1d' }
+      config.jwtSecret,
+      { expiresIn: config.jwtExpire }
     );
 
     console.log('🧠 Usuario logueado en app:', {
@@ -170,7 +171,7 @@ exports.loginUser = async (req, res) => {
 };
 
 // ✅ Verificar si existe un username
-exports.checkUsername = async (req, res) => {
+export const checkUsername = async (req, res) => {
   try {
     const { username } = req.query;
     const user = await UserModel.findOne({ username });
@@ -187,14 +188,14 @@ exports.checkUsername = async (req, res) => {
 };
 
 // ✅ Verificar si existe un teléfono
-exports.checkPhone = async (req, res) => {
+export const checkPhone = async (req, res) => {
   const { phone } = req.query;
   const exists = await UserModel.exists({ phone });
   res.json({ exists: Boolean(exists) });
 };
 
 // ✅ Obtener un usuario por ID
-exports.getById = async (req, res) => {
+export const getById = async (req, res) => {
   try {
     const user = await UserModel.findById(req.params.id).populate('house_id');
     if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
@@ -203,4 +204,17 @@ exports.getById = async (req, res) => {
     console.error("❌ Error al obtener usuario por ID:", err);
     res.status(500).json({ message: "Error del servidor" });
   }
+};
+
+export default {
+  getAll,
+  create,
+  update,
+  updateProfile,
+  toggleEstado,
+  login,
+  loginUser,
+  checkUsername,
+  checkPhone,
+  getById
 };
